@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SSOfy Response Viewer</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js"></script>
+    <script src="/dist/ssofy.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h1>
+        SSOfy - Browser Test
+    </h1>
+
+    <button onclick="initImplicitFlow()">Init Implicit Flow</button>
+    <button onclick="initAuthCodeFlow()">Init Auth Code Flow</button>
+</div>
+
+<div class="container">
+    <label>Status:</label>
+    <div id="statusLabel">Loading...</div>
+
+    <label for="jsonTextbox">Token (JSON):</label>
+    <textarea id="jsonTextbox" readonly></textarea>
+</div>
+
+<script>
+    const client = new SSOfy.OAuth2Client({
+        url: 'http://sandbox.us.ssofy.local',
+        clientId: 'sandbox',
+        clientSecret: 'sandbox',
+        redirectUri: SSOfy.UrlHelper.getUrl(window.location.href) + '/#callback',
+        pkceVerification: true,
+        scopes: ['*'],
+        locale: 'en',
+        stateStore: new SSOfy.LocalStorage(),
+        stateTtl: 30 * 24 * 60 * 60,
+    });
+
+    async function initAuthCodeFlow() {
+        const stateData = await client.initAuthCodeFlow();
+
+        localStorage.setItem('state', stateData.state);
+
+        updateUI('Starting Authorization Code Flow...', null);
+
+        // some delay for ui responsiveness
+        await new Promise(function (resolve) {
+            setTimeout(resolve, 1000);
+        });
+
+        window.location.href = stateData.authorizationUri;
+    }
+
+    async function initImplicitFlow() {
+        const stateData = await client.initImplicitFlow();
+
+        localStorage.setItem('state', stateData.state);
+
+        updateUI('Starting Implicit Flow...', null);
+
+        // some delay for ui responsiveness
+        await new Promise(function (resolve) {
+            setTimeout(resolve, 1000);
+        });
+
+        window.location.href = stateData.authorizationUri;
+    }
+
+    async function handleCallback() {
+        const state = localStorage.getItem('state');
+        const parameters = SSOfy.UrlHelper.getParameters(window.location.href);
+
+        const stateData = await client.handleCallback(state, parameters);
+
+        updateUI('Token Received', stateData.token);
+
+        if (stateData.nextUri) {
+            window.location.href = stateData.nextUri;
+        }
+    }
+
+    async function main() {
+        try {
+            const token = await client.getAccessToken(localStorage.getItem('state'));
+            if (token) {
+                updateUI('Valid Token', token);
+                return;
+            }
+
+            if (window.location.hash.indexOf('#callback') >= 0) {
+                // this is a callback
+                updateUI('Exchanging Token for Access Token...', null);
+                await handleCallback();
+                return;
+            }
+
+            await initAuthCodeFlow();
+
+        } catch (error) {
+            updateUI('Error: ' + error.message, null);
+        }
+    }
+
+    main();
+</script>
+
+</body>
+</html>

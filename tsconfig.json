@@ -1,0 +1,39 @@
+{
+    "exclude": [
+        "tests",
+        "jest.*",
+        "html",
+        "build",
+        "dist",
+        "coverage",
+        "src/__test__",
+        "webpack.config.js"
+    ],
+    "compilerOptions": {
+        /* Visit https://aka.ms/tsconfig to read more about this file */
+
+        /* Language and Environment */
+        "target": "es5",
+        "lib": [
+            "es6",
+            "dom"
+        ],
+        /* Modules */
+        "module": "commonjs",
+        "rootDir": "src/",
+        "resolveJsonModule": true,
+        /* JavaScript Support */
+        "allowJs": true,
+        /* Emit */
+        "declaration": true,
+        "outDir": "build",
+        /* Interop Constraints */
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        /* Type Checking */
+        "strict": true,
+        "noImplicitAny": true,
+        /* Completeness */
+        "skipLibCheck": true
+    }
+}
