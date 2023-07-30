@@ -49,12 +49,12 @@ export class OAuth2Client {
         this.stateStore = config.stateStore ?? new NullStorage();
     }
 
-    async initAuthCodeFlow(nextUri?: string): Promise<State> {
-        return this.initWorkflow(AuthorizationRequest.RESPONSE_TYPE_CODE, nextUri);
+    async initAuthCodeFlow(authorizationUrl?: string, nextUri?: string): Promise<State> {
+        return this.initWorkflow(AuthorizationRequest.RESPONSE_TYPE_CODE, authorizationUrl, nextUri);
     }
 
-    async initImplicitFlow(nextUri?: string): Promise<State> {
-        return this.initWorkflow(AuthorizationRequest.RESPONSE_TYPE_TOKEN, nextUri);
+    async initImplicitFlow(authorizationUrl?: string, nextUri?: string): Promise<State> {
+        return this.initWorkflow(AuthorizationRequest.RESPONSE_TYPE_TOKEN, authorizationUrl, nextUri);
     }
 
     async handleCallback(payload: any = {}): Promise<State> {
@@ -234,12 +234,12 @@ export class OAuth2Client {
         return this.stateStore.delete(this.stateStorageKey(state));
     }
 
-    private async initWorkflow(responseType: string, nextUri?: string): Promise<State> {
+    private async initWorkflow(responseType: string, authorizationUrl?: string, nextUri?: string): Promise<State> {
         if (browser()) {
             await this.stateStore.cleanup();
         }
 
-        let authorizationUrl = this.config.authorizationUrl() ?? '';
+        authorizationUrl = authorizationUrl ?? this.config.authorizationUrl() ?? '';
 
         let extras = UrlHelper.getParameters(authorizationUrl);
 
