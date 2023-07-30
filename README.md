@@ -98,6 +98,13 @@ if (stateData.nextUri) {
 }
 ```
 
+### Get Access Token
+```javascript
+const state = localStorage.getItem('state');
+
+const accessToken = await client.getAccessToken(state);
+```
+
 ### Logout Locally
 
 ```javascript
