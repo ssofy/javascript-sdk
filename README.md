@@ -78,22 +78,19 @@ const stateData = await client.initImplicitFlow('/optional-uri-to-redirect-next'
 // Auth Code Flow
 const stateData = await client.initAuthCodeFlow('/optional-uri-to-redirect-next');
 
-// store the state identifier somewhere
-localStorage.setItem('state', stateData.state);
-
 // redirect to the login page
 window.location.href = stateData.authorizationUri;
 ```
 
 ### Callback
 ```javascript
-// read the previously store state identifier
-const state = localStorage.getItem('state');
-
 // create json payload from url parameters
 const parameters = SSOfy.UrlHelper.getParameters(window.location.href);
 
-const stateData = await client.handleCallback(state, parameters);
+const stateData = await client.handleCallback(parameters);
+
+// store the last login state identifier somewhere for future use
+localStorage.setItem('state', stateData.state);
 
 if (stateData.nextUri) {
     // Hint: /optional-uri-to-redirect-next
@@ -113,10 +110,10 @@ await client.destroy(state);
 await client.destroy(state);
 
 // logout from this device
-window.location.href = config.logoutUrl('URL-TO-REDIRECT-AFTER-LOGOUT')
+window.location.href = config.logoutUrl('URI-TO-REDIRECT-AFTER-LOGOUT')
     
 // logout from all devices
-window.location.href = config.logoutEverywhereUrl('URL-TO-REDIRECT-AFTER-LOGOUT')
+window.location.href = config.logoutEverywhereUrl('URI-TO-REDIRECT-AFTER-LOGOUT')
 ```
 
 ## Support

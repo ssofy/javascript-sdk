@@ -42,8 +42,6 @@
     async function initAuthCodeFlow() {
         const stateData = await client.initAuthCodeFlow();
 
-        localStorage.setItem('state', stateData.state);
-
         updateUI('Starting Authorization Code Flow...', null);
 
         // some delay for ui responsiveness
@@ -57,8 +55,6 @@
     async function initImplicitFlow() {
         const stateData = await client.initImplicitFlow();
 
-        localStorage.setItem('state', stateData.state);
-
         updateUI('Starting Implicit Flow...', null);
 
         // some delay for ui responsiveness
@@ -70,10 +66,11 @@
     }
 
     async function handleCallback() {
-        const state = localStorage.getItem('state');
         const parameters = SSOfy.UrlHelper.getParameters(window.location.href);
 
-        const stateData = await client.handleCallback(state, parameters);
+        const stateData = await client.handleCallback(parameters);
+
+        localStorage.setItem('state', stateData.state);
 
         updateUI('Token Received', stateData.token);
 
@@ -89,15 +86,17 @@
                 updateUI('Valid Token', token);
                 return;
             }
+        } catch (error) {
+            updateUI('Error: ' + error.message, null);
+        }
 
+        try {
             if (window.location.hash.indexOf('#callback') >= 0) {
                 // this is a callback
                 updateUI('Exchanging Token for Access Token...', null);
-                await handleCallback();
-                return;
-            }
 
-            await initAuthCodeFlow();
+                await handleCallback();
+            }
 
         } catch (error) {
             updateUI('Error: ' + error.message, null);
