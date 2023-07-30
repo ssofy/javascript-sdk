@@ -1,3 +1,4 @@
+export {OAuth2ConfigParameters} from "./OAuth2Client/OAuth2ConfigParameters";
 export {OAuth2Config} from "./OAuth2Config";
 export {OAuth2Client} from "./OAuth2Client";
 export {Storage} from "./Storage/Storage";
