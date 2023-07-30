@@ -73,10 +73,13 @@ const client = new OAuth2Client(config);
 ### Authorization
 
 ```javascript
+const customAuthorizationUrl = null; // optional
+const nextUri = null; // optional
+
 // Implicit Flow
-const stateData = await client.initImplicitFlow('/optional-uri-to-redirect-next');
+const stateData = await client.initImplicitFlow(customAuthorizationUrl, nextUri);
 // Auth Code Flow
-const stateData = await client.initAuthCodeFlow('/optional-uri-to-redirect-next');
+const stateData = await client.initAuthCodeFlow(customAuthorizationUrl, nextUri);
 
 // redirect to the login page
 window.location.href = stateData.authorizationUri;
