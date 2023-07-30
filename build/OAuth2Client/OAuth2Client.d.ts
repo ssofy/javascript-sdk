@@ -6,9 +6,9 @@ export declare class OAuth2Client {
     private config;
     private stateStore;
     constructor(config: OAuth2Config | OAuth2ConfigParameters);
-    initAuthCodeFlow(nextUri?: string): Promise<State>;
-    initImplicitFlow(nextUri?: string): Promise<State>;
-    handleCallback(state: string, payload: any): Promise<State>;
+    initAuthCodeFlow(authorizationUrl?: string, nextUri?: string): Promise<State>;
+    initImplicitFlow(authorizationUrl?: string, nextUri?: string): Promise<State>;
+    handleCallback(payload?: any): Promise<State>;
     getConfig(state: string): Promise<OAuth2Config | null>;
     getUserInfo(state: string): Promise<any>;
     refreshUserInfo(state: string): Promise<any>;

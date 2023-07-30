@@ -67,27 +67,30 @@ var OAuth2Client = /** @class */ (function () {
         }
         this.stateStore = (_a = config.stateStore) !== null && _a !== void 0 ? _a : new NullStorage_1.NullStorage();
     }
-    OAuth2Client.prototype.initAuthCodeFlow = function (nextUri) {
+    OAuth2Client.prototype.initAuthCodeFlow = function (authorizationUrl, nextUri) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.initWorkflow(appauth_1.AuthorizationRequest.RESPONSE_TYPE_CODE, nextUri)];
+                return [2 /*return*/, this.initWorkflow(appauth_1.AuthorizationRequest.RESPONSE_TYPE_CODE, authorizationUrl, nextUri)];
             });
         });
     };
-    OAuth2Client.prototype.initImplicitFlow = function (nextUri) {
+    OAuth2Client.prototype.initImplicitFlow = function (authorizationUrl, nextUri) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.initWorkflow(appauth_1.AuthorizationRequest.RESPONSE_TYPE_TOKEN, nextUri)];
+                return [2 /*return*/, this.initWorkflow(appauth_1.AuthorizationRequest.RESPONSE_TYPE_TOKEN, authorizationUrl, nextUri)];
             });
         });
     };
-    OAuth2Client.prototype.handleCallback = function (state, payload) {
+    OAuth2Client.prototype.handleCallback = function (payload) {
         var _a, _b, _c;
+        if (payload === void 0) { payload = {}; }
         return __awaiter(this, void 0, void 0, function () {
-            var stateData, config, extras, response, _d, request, tokenHandler, e_1;
+            var state, stateData, config, extras, response, _d, request, tokenHandler, e_1;
             return __generator(this, function (_e) {
                 switch (_e.label) {
-                    case 0: return [4 /*yield*/, this.getState(state)];
+                    case 0:
+                        state = payload.state;
+                        return [4 /*yield*/, this.getState(state)];
                     case 1:
                         stateData = _e.sent();
                         if (!stateData) {
@@ -278,10 +281,10 @@ var OAuth2Client = /** @class */ (function () {
             });
         });
     };
-    OAuth2Client.prototype.initWorkflow = function (responseType, nextUri) {
+    OAuth2Client.prototype.initWorkflow = function (responseType, authorizationUrl, nextUri) {
         var _a, _b, _c, _d, _e, _f;
         return __awaiter(this, void 0, void 0, function () {
-            var authorizationUrl, extras, request, _g, authorizationHandler, stateData;
+            var extras, request, _g, authorizationHandler, stateData;
             return __generator(this, function (_h) {
                 switch (_h.label) {
                     case 0:
@@ -291,7 +294,7 @@ var OAuth2Client = /** @class */ (function () {
                         _h.sent();
                         _h.label = 2;
                     case 2:
-                        authorizationUrl = (_a = this.config.authorizationUrl()) !== null && _a !== void 0 ? _a : '';
+                        authorizationUrl = (_a = authorizationUrl !== null && authorizationUrl !== void 0 ? authorizationUrl : this.config.authorizationUrl()) !== null && _a !== void 0 ? _a : '';
                         extras = UrlHelper_1.UrlHelper.getParameters(authorizationUrl);
                         authorizationUrl = UrlHelper_1.UrlHelper.getUrl(authorizationUrl);
                         _h.label = 3;
