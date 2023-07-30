@@ -57,7 +57,8 @@ export class OAuth2Client {
         return this.initWorkflow(AuthorizationRequest.RESPONSE_TYPE_TOKEN, nextUri);
     }
 
-    async handleCallback(state: string, payload: any): Promise<State> {
+    async handleCallback(payload: any = {}): Promise<State> {
+        const state = payload.state;
         const stateData = await this.getState(state);
 
         if (!stateData) {
