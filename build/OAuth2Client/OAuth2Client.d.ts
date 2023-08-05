@@ -13,6 +13,7 @@ export declare class OAuth2Client {
     getUserInfo(state: string): Promise<any>;
     refreshUserInfo(state: string): Promise<any>;
     getAccessToken(state: string): Promise<Token | null>;
+    renewAccessToken(state: string): Promise<Token | null>;
     destroy(state: string): Promise<void>;
     private initWorkflow;
     private getState;

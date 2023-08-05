@@ -44,17 +44,21 @@ var AuthorizationRequestHandler_1 = require("./AuthorizationRequestHandler");
 var UserInfoRequestHandler_1 = require("./UserInfoRequestHandler");
 var InvalidStateError_1 = require("../Errors/InvalidStateError");
 var AuthError_1 = require("../Errors/AuthError");
+var RefreshTokenError_1 = require("../Errors/RefreshTokenError");
 var UrlHelper_1 = require("../Helpers/UrlHelper");
 var appauth_1 = require("@openid/appauth");
 function browser() {
     return typeof process === 'undefined' || !process.release || process.release.name !== 'node';
 }
 var HttpRequester = require('HttpRequester');
+var PKCECrypto = require('PKCECrypto');
 if (!browser()) {
     HttpRequester = HttpRequester.NodeRequestor;
+    PKCECrypto = PKCECrypto.NodeCrypto;
 }
 else {
     HttpRequester = HttpRequester.FetchRequestor;
+    PKCECrypto = PKCECrypto.DefaultCrypto;
 }
 var OAuth2Client = /** @class */ (function () {
     function OAuth2Client(config) {
@@ -223,14 +227,14 @@ var OAuth2Client = /** @class */ (function () {
         });
     };
     OAuth2Client.prototype.getAccessToken = function (state) {
-        var _a, _b, _c, _d, _e;
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function () {
-            var stateData, token, expiryTime, config, extras, request, tokenHandler, response;
-            return __generator(this, function (_f) {
-                switch (_f.label) {
+            var stateData, token, expiryTime;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0: return [4 /*yield*/, this.getState(state)];
                     case 1:
-                        stateData = _f.sent();
+                        stateData = _c.sent();
                         if (!stateData) {
                             throw new InvalidStateError_1.InvalidStateError();
                         }
@@ -245,30 +249,67 @@ var OAuth2Client = /** @class */ (function () {
                         if (!token.refresh_token) {
                             return [2 /*return*/, null];
                         }
+                        return [4 /*yield*/, this.renewAccessToken(state)];
+                    case 2: return [2 /*return*/, _c.sent()];
+                }
+            });
+        });
+    };
+    OAuth2Client.prototype.renewAccessToken = function (state) {
+        var _a, _b, _c;
+        return __awaiter(this, void 0, void 0, function () {
+            var stateData, token, config, extras, request, tokenHandler, response, e_2;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0: return [4 /*yield*/, this.getState(state)];
+                    case 1:
+                        stateData = _d.sent();
+                        if (!stateData) {
+                            throw new InvalidStateError_1.InvalidStateError();
+                        }
+                        if (!stateData.token) {
+                            return [2 /*return*/, null];
+                        }
+                        token = stateData.token;
+                        if (!token.refresh_token) {
+                            throw new RefreshTokenError_1.RefreshTokenError();
+                        }
                         config = new OAuth2Config_1.OAuth2Config(stateData.config);
                         extras = {
-                            'client_secret': (_c = config.clientSecret) !== null && _c !== void 0 ? _c : '',
+                            'client_secret': (_a = config.clientSecret) !== null && _a !== void 0 ? _a : '',
                         };
                         if (config.pkceVerification && stateData.codeVerifier) {
                             extras['code_verifier'] = stateData.codeVerifier;
                         }
                         request = new appauth_1.TokenRequest({
-                            client_id: (_d = config.clientId) !== null && _d !== void 0 ? _d : '',
-                            redirect_uri: (_e = config.redirectUri) !== null && _e !== void 0 ? _e : '',
+                            client_id: (_b = config.clientId) !== null && _b !== void 0 ? _b : '',
+                            redirect_uri: (_c = config.redirectUri) !== null && _c !== void 0 ? _c : '',
                             grant_type: appauth_1.GRANT_TYPE_REFRESH_TOKEN,
                             refresh_token: token.refresh_token,
                             extras: extras,
                         });
                         tokenHandler = new appauth_1.BaseTokenRequestHandler(new HttpRequester());
+                        response = null;
+                        _d.label = 2;
+                    case 2:
+                        _d.trys.push([2, 4, , 5]);
                         return [4 /*yield*/, tokenHandler.performTokenRequest({
                                 tokenEndpoint: this.config.tokenUrl(),
                             }, request)];
-                    case 2:
-                        response = _f.sent();
+                    case 3:
+                        response = _d.sent();
+                        return [3 /*break*/, 5];
+                    case 4:
+                        e_2 = _d.sent();
+                        if (e_2 instanceof appauth_1.AppAuthError) {
+                            throw new AuthError_1.AuthError(e_2.message);
+                        }
+                        throw e_2;
+                    case 5:
                         stateData.token = response.toJson();
                         return [4 /*yield*/, this.saveState(state, stateData, this.config.stateTtl)];
-                    case 3:
-                        _f.sent();
+                    case 6:
+                        _d.sent();
                         return [2 /*return*/, stateData.token];
                 }
             });
@@ -313,7 +354,7 @@ var OAuth2Client = /** @class */ (function () {
                             scope: (_e = (_d = this.config.scopes) === null || _d === void 0 ? void 0 : _d.join(' ')) !== null && _e !== void 0 ? _e : '',
                             response_type: responseType,
                             extras: extras,
-                        }, new appauth_1.DefaultCrypto(), this.config.pkceVerification);
+                        }, new PKCECrypto(), this.config.pkceVerification);
                         return [3 /*break*/, 3];
                     case 6:
                         authorizationHandler = new AuthorizationRequestHandler_1.AuthorizationRequestHandler();

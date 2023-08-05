@@ -42,12 +42,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FileStorage = void 0;
 var util_1 = require("util");
 var fs_1 = require("fs");
-var glob_1 = require("glob");
+var glob_1 = __importDefault(require("glob"));
 var path_1 = __importDefault(require("path"));
 var FileStorage = /** @class */ (function () {
     function FileStorage(storagePath) {
         this.storagePath = storagePath;
-        this.glob = (0, util_1.promisify)(glob_1.glob);
+        this.glob = (0, util_1.promisify)(glob_1.default);
     }
     FileStorage.prototype.put = function (key, value, ttl) {
         return __awaiter(this, void 0, void 0, function () {
@@ -148,40 +148,40 @@ var FileStorage = /** @class */ (function () {
     };
     FileStorage.prototype.cleanup = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var filenames, _i, filenames_1, filename, ttl, filePath, _a, _b, _c;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
                     case 0: return [4 /*yield*/, fs_1.promises.readdir(this.storagePath)];
                     case 1:
-                        (_a.sent()).map(function (filename) { return __awaiter(_this, void 0, void 0, function () {
-                            var ttl, _a, _b, _c;
-                            return __generator(this, function (_d) {
-                                switch (_d.label) {
-                                    case 0:
-                                        if (filename.startsWith('.')) {
-                                            return [2 /*return*/];
-                                        }
-                                        ttl = Number.parseInt(filename.substring(filename.indexOf('.') + 1));
-                                        filename = path_1.default.join(this.storagePath, filename);
-                                        _a = ttl > 0;
-                                        if (!_a) return [3 /*break*/, 2];
-                                        _b = (new Date()).getTime() / 1000;
-                                        _c = Date.bind;
-                                        return [4 /*yield*/, fs_1.promises.stat(filename)];
-                                    case 1:
-                                        _a = _b >= (new (_c.apply(Date, [void 0, (_d.sent()).mtime]))().getTime() / 1000) + ttl;
-                                        _d.label = 2;
-                                    case 2:
-                                        if (!_a) return [3 /*break*/, 4];
-                                        return [4 /*yield*/, fs_1.promises.rm(filename)];
-                                    case 3:
-                                        _d.sent();
-                                        _d.label = 4;
-                                    case 4: return [2 /*return*/];
-                                }
-                            });
-                        }); });
-                        return [2 /*return*/];
+                        filenames = _d.sent();
+                        _i = 0, filenames_1 = filenames;
+                        _d.label = 2;
+                    case 2:
+                        if (!(_i < filenames_1.length)) return [3 /*break*/, 7];
+                        filename = filenames_1[_i];
+                        if (filename.startsWith('.')) {
+                            return [3 /*break*/, 6];
+                        }
+                        ttl = Number.parseInt(filename.substring(filename.indexOf('.') + 1));
+                        filePath = path_1.default.join(this.storagePath, filename);
+                        _a = ttl > 0;
+                        if (!_a) return [3 /*break*/, 4];
+                        _b = (new Date()).getTime() / 1000;
+                        _c = Date.bind;
+                        return [4 /*yield*/, fs_1.promises.stat(filePath)];
+                    case 3:
+                        _a = _b >= (new (_c.apply(Date, [void 0, (_d.sent()).mtime]))().getTime() / 1000) + ttl;
+                        _d.label = 4;
+                    case 4:
+                        if (!_a) return [3 /*break*/, 6];
+                        return [4 /*yield*/, fs_1.promises.rm(filePath)];
+                    case 5:
+                        _d.sent();
+                        _d.label = 6;
+                    case 6:
+                        _i++;
+                        return [3 /*break*/, 2];
+                    case 7: return [2 /*return*/];
                 }
             });
         });
