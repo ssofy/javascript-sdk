@@ -1,17 +1,17 @@
 import {Storage} from "./Storage";
 import {promisify} from "util";
 import {promises as fs} from 'fs';
-import {glob as _glob} from "glob";
+import glob, {IOptions} from "glob";
 import path from "path";
 
 export class FileStorage implements Storage {
     private readonly storagePath: string;
 
-    private readonly glob: any;
+    private readonly glob: (pattern: string, options?: IOptions) => Promise<string[]>;
 
     constructor(storagePath: string) {
         this.storagePath = storagePath;
-        this.glob = promisify(_glob);
+        this.glob = promisify(glob);
     }
 
     async put(key: string, value: string, ttl?: number): Promise<void> {
@@ -56,19 +56,21 @@ export class FileStorage implements Storage {
     }
 
     async cleanup(): Promise<void> {
-        (await fs.readdir(this.storagePath)).map(async filename => {
+        const filenames = await fs.readdir(this.storagePath);
+
+        for (const filename of filenames) {
             if (filename.startsWith('.')) {
-                return;
+                continue;
             }
 
             const ttl = Number.parseInt(filename.substring(filename.indexOf('.') + 1));
 
-            filename = path.join(this.storagePath, filename);
+            const filePath = path.join(this.storagePath, filename);
 
-            if (ttl > 0 && (new Date()).getTime() / 1000 >= (new Date((await fs.stat(filename)).mtime).getTime() / 1000) + ttl) {
-                await fs.rm(filename);
+            if (ttl > 0 && (new Date()).getTime() / 1000 >= (new Date((await fs.stat(filePath)).mtime).getTime() / 1000) + ttl) {
+                await fs.rm(filePath);
             }
-        });
+        }
     }
 
     private getFilename(key: string) {
