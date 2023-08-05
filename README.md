@@ -108,6 +108,13 @@ const state = localStorage.getItem('state');
 const accessToken = await client.getAccessToken(state);
 ```
 
+### Renew Access Token
+```javascript
+const state = localStorage.getItem('state');
+
+const accessToken = await client.renewAccessToken(state);
+```
+
 ### Logout Locally
 
 ```javascript
