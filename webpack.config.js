@@ -16,6 +16,7 @@ const config = {
         extensions: ['.tsx', '.ts', '.js'],
         alias: {
             'HttpRequester': process.env.BUILD_ENV === 'node' ? '@openid/appauth/built/node_support/node_requestor' : '@openid/appauth/built/xhr',
+            'PKCECrypto': process.env.BUILD_ENV === 'node' ? '@openid/appauth/built/node_support/crypto_utils' : '@openid/appauth/built/crypto_utils',
         }
     },
 };

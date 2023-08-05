@@ -28,10 +28,14 @@ function browser(): boolean {
 }
 
 let HttpRequester = require('HttpRequester');
+let PKCECrypto = require('PKCECrypto');
+
 if (!browser()) {
     HttpRequester = HttpRequester.NodeRequestor;
+    PKCECrypto = PKCECrypto.NodeCrypto;
 } else {
     HttpRequester = HttpRequester.FetchRequestor;
+    PKCECrypto = PKCECrypto.DefaultCrypto;
 }
 
 export class OAuth2Client {
@@ -253,7 +257,7 @@ export class OAuth2Client {
                 scope: this.config.scopes?.join(' ') ?? '',
                 response_type: responseType,
                 extras: extras,
-            }, new DefaultCrypto(), this.config.pkceVerification);
+            }, new PKCECrypto(), this.config.pkceVerification);
         }
 
         const authorizationHandler = new AuthorizationRequestHandler();
