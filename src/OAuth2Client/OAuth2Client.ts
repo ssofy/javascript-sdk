@@ -9,6 +9,7 @@ import {Token} from "./Token";
 import {State} from "./State";
 import {InvalidStateError} from "../Errors/InvalidStateError";
 import {AuthError} from "../Errors/AuthError";
+import {RefreshTokenError} from "../Errors/RefreshTokenError";
 import {UrlHelper} from "../Helpers/UrlHelper";
 import {
     AuthorizationRequest,
@@ -20,7 +21,7 @@ import {
     TokenErrorJson,
     AppAuthError,
     StringMap,
-    GRANT_TYPE_AUTHORIZATION_CODE, GRANT_TYPE_REFRESH_TOKEN, DefaultCrypto
+    GRANT_TYPE_AUTHORIZATION_CODE, GRANT_TYPE_REFRESH_TOKEN
 } from "@openid/appauth";
 
 function browser(): boolean {
@@ -203,6 +204,26 @@ export class OAuth2Client {
             return null;
         }
 
+        return await this.renewAccessToken(state);
+    }
+
+    async renewAccessToken(state: string): Promise<Token | null> {
+        const stateData = await this.getState(state);
+
+        if (!stateData) {
+            throw new InvalidStateError();
+        }
+
+        if (!stateData.token) {
+            return null;
+        }
+
+        const token = stateData.token;
+
+        if (!token.refresh_token) {
+            throw new RefreshTokenError();
+        }
+
         const config = new OAuth2Config(stateData.config);
 
         let extras: StringMap = {
@@ -223,9 +244,19 @@ export class OAuth2Client {
 
         const tokenHandler = new BaseTokenRequestHandler(new HttpRequester());
 
-        const response = await tokenHandler.performTokenRequest(<AuthorizationServiceConfiguration>{
-            tokenEndpoint: this.config.tokenUrl(),
-        }, request);
+        let response: TokenResponse | null = null;
+
+        try {
+            response = await tokenHandler.performTokenRequest(<AuthorizationServiceConfiguration>{
+                tokenEndpoint: this.config.tokenUrl(),
+            }, request);
+        } catch (e) {
+            if (e instanceof AppAuthError) {
+                throw new AuthError(e.message);
+            }
+
+            throw e;
+        }
 
         stateData.token = response.toJson();
 
