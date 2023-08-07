@@ -47,18 +47,14 @@ var AuthError_1 = require("../Errors/AuthError");
 var RefreshTokenError_1 = require("../Errors/RefreshTokenError");
 var UrlHelper_1 = require("../Helpers/UrlHelper");
 var appauth_1 = require("@openid/appauth");
-function browser() {
-    return typeof process === 'undefined' || !process.release || process.release.name !== 'node';
-}
-var HttpRequester = require('HttpRequester');
-var PKCECrypto = require('PKCECrypto');
-if (!browser()) {
-    HttpRequester = HttpRequester.NodeRequestor;
-    PKCECrypto = PKCECrypto.NodeCrypto;
-}
-else {
-    HttpRequester = HttpRequester.FetchRequestor;
-    PKCECrypto = PKCECrypto.DefaultCrypto;
+var HttpRequester = require('@openid/appauth/built/xhr').FetchRequestor;
+var PKCECrypto = require('@openid/appauth/built/crypto_utils').DefaultCrypto;
+var browser = typeof process === 'undefined' || !process.release || process.release.name !== 'node';
+if (!browser) {
+    var requesterClass = '@openid/appauth/built/node_support/node_requestor';
+    var cryptoClass = '@openid/appauth/built/node_support/crypto_utils';
+    HttpRequester = require(requesterClass).NodeRequestor;
+    PKCECrypto = require(cryptoClass).NodeCrypto;
 }
 var OAuth2Client = /** @class */ (function () {
     function OAuth2Client(config) {
@@ -329,7 +325,7 @@ var OAuth2Client = /** @class */ (function () {
             return __generator(this, function (_h) {
                 switch (_h.label) {
                     case 0:
-                        if (!browser()) return [3 /*break*/, 2];
+                        if (!browser) return [3 /*break*/, 2];
                         return [4 /*yield*/, this.stateStore.cleanup()];
                     case 1:
                         _h.sent();
