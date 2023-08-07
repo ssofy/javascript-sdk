@@ -10,8 +10,4 @@ module.exports = {
     coverageProvider: "v8",
     preset: 'ts-jest',
     modulePathIgnorePatterns: ["build"],
-    moduleNameMapper: {
-        "HttpRequester": "@openid/appauth/built/node_support/node_requestor",
-        "PKCECrypto": "@openid/appauth/built/node_support/crypto_utils"
-    },
 };

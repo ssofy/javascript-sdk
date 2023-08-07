@@ -24,19 +24,16 @@ import {
     GRANT_TYPE_AUTHORIZATION_CODE, GRANT_TYPE_REFRESH_TOKEN
 } from "@openid/appauth";
 
-function browser(): boolean {
-    return typeof process === 'undefined' || !process.release || process.release.name !== 'node';
-}
+let HttpRequester = require('@openid/appauth/built/xhr').FetchRequestor;
+let PKCECrypto = require('@openid/appauth/built/crypto_utils').DefaultCrypto;
 
-let HttpRequester = require('HttpRequester');
-let PKCECrypto = require('PKCECrypto');
+const browser = typeof process === 'undefined' || !process.release || process.release.name !== 'node';
+if (!browser) {
+    let requesterClass = '@openid/appauth/built/node_support/node_requestor';
+    let cryptoClass = '@openid/appauth/built/node_support/crypto_utils';
 
-if (!browser()) {
-    HttpRequester = HttpRequester.NodeRequestor;
-    PKCECrypto = PKCECrypto.NodeCrypto;
-} else {
-    HttpRequester = HttpRequester.FetchRequestor;
-    PKCECrypto = PKCECrypto.DefaultCrypto;
+    HttpRequester = require(requesterClass).NodeRequestor;
+    PKCECrypto = require(cryptoClass).NodeCrypto;
 }
 
 export class OAuth2Client {
@@ -270,7 +267,7 @@ export class OAuth2Client {
     }
 
     private async initWorkflow(responseType: string, authorizationUrl?: string, nextUri?: string): Promise<State> {
-        if (browser()) {
+        if (browser) {
             await this.stateStore.cleanup();
         }
 
