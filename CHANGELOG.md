@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.0.3 * 2023-08-07
+
+* Hotfix: Fixed module load issue.
+
 ## 1.0.2 * 2023-08-05
 
 * Fixed the PKCE crypto issue with node apps.
