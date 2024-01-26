@@ -96,7 +96,7 @@ const stateData = await client.initImplicitFlow(customAuthorizationUrl, nextUri)
 window.location.href = stateData.authorizationUri;
 ```
 
-### Callback
+### Handling Callbacks
 ```javascript
 // create json payload from url parameters
 const parameters = SSOfy.UrlHelper.getParameters(window.location.href);
@@ -136,7 +136,7 @@ const accessToken = await client.renewAccessToken(state);
 await client.destroy(state);
 ```
 
-### Logout Globally
+### Logout Globally (SLO)
 
 ```javascript
 await client.destroy(state);
