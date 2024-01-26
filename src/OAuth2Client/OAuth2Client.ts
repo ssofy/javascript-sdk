@@ -23,6 +23,7 @@ import {
     StringMap,
     GRANT_TYPE_AUTHORIZATION_CODE, GRANT_TYPE_REFRESH_TOKEN
 } from "@openid/appauth";
+import {CallbackError} from "../Errors/CallbackError";
 
 let HttpRequester = require('@openid/appauth/built/xhr').FetchRequestor;
 let PKCECrypto = require('@openid/appauth/built/crypto_utils').DefaultCrypto;
@@ -60,9 +61,12 @@ export class OAuth2Client {
     }
 
     async handleCallback(payload: any = {}): Promise<State> {
+        if (payload.hasOwnProperty('error')) {
+            throw new CallbackError(payload.error_description, payload.error);
+        }
+
         const state = payload.state;
         const stateData = await this.getState(state);
-
         if (!stateData) {
             throw new InvalidStateError();
         }
