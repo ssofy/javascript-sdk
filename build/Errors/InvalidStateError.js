@@ -20,7 +20,9 @@ var BaseError_1 = require("./BaseError");
 var InvalidStateError = /** @class */ (function (_super) {
     __extends(InvalidStateError, _super);
     function InvalidStateError() {
-        return _super.call(this, 'Invalid State') || this;
+        var _this = _super.call(this, 'Invalid State') || this;
+        _this.name = 'InvalidStateError';
+        return _this;
     }
     return InvalidStateError;
 }(BaseError_1.BaseError));

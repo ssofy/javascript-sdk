@@ -47,6 +47,7 @@ var AuthError_1 = require("../Errors/AuthError");
 var RefreshTokenError_1 = require("../Errors/RefreshTokenError");
 var UrlHelper_1 = require("../Helpers/UrlHelper");
 var appauth_1 = require("@openid/appauth");
+var CallbackError_1 = require("../Errors/CallbackError");
 var HttpRequester = require('@openid/appauth/built/xhr').FetchRequestor;
 var PKCECrypto = require('@openid/appauth/built/crypto_utils').DefaultCrypto;
 var browser = typeof process === 'undefined' || !process.release || process.release.name !== 'node';
@@ -89,6 +90,9 @@ var OAuth2Client = /** @class */ (function () {
             return __generator(this, function (_e) {
                 switch (_e.label) {
                     case 0:
+                        if (payload.hasOwnProperty('error')) {
+                            throw new CallbackError_1.CallbackError(payload.error_description, payload.error);
+                        }
                         state = payload.state;
                         return [4 /*yield*/, this.getState(state)];
                     case 1:
@@ -348,6 +352,7 @@ var OAuth2Client = /** @class */ (function () {
                             client_id: (_b = this.config.clientId) !== null && _b !== void 0 ? _b : '',
                             redirect_uri: (_c = this.config.redirectUri) !== null && _c !== void 0 ? _c : '',
                             scope: (_e = (_d = this.config.scopes) === null || _d === void 0 ? void 0 : _d.join(' ')) !== null && _e !== void 0 ? _e : '',
+                            state: this.config.state,
                             response_type: responseType,
                             extras: extras,
                         }, new PKCECrypto(), this.config.pkceVerification);

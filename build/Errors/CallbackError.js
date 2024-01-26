@@ -15,16 +15,16 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AuthError = void 0;
+exports.CallbackError = void 0;
 var BaseError_1 = require("./BaseError");
-var AuthError = /** @class */ (function (_super) {
-    __extends(AuthError, _super);
-    function AuthError(message) {
+var CallbackError = /** @class */ (function (_super) {
+    __extends(CallbackError, _super);
+    function CallbackError(message, code) {
         var _this = _super.call(this, message) || this;
-        _this.message = message;
-        _this.name = 'AuthError';
+        _this.code = code;
+        _this.name = 'CallbackError';
         return _this;
     }
-    return AuthError;
+    return CallbackError;
 }(BaseError_1.BaseError));
-exports.AuthError = AuthError;
+exports.CallbackError = CallbackError;

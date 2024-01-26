@@ -20,7 +20,9 @@ var BaseError_1 = require("./BaseError");
 var RefreshTokenError = /** @class */ (function (_super) {
     __extends(RefreshTokenError, _super);
     function RefreshTokenError() {
-        return _super.call(this, 'Token is not renewable') || this;
+        var _this = _super.call(this, 'Token is not renewable') || this;
+        _this.name = 'RefreshTokenError';
+        return _this;
     }
     return RefreshTokenError;
 }(BaseError_1.BaseError));
