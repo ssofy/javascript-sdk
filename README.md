@@ -42,6 +42,7 @@ const client = new SSOfy.OAuth2Client({
     redirectUri: 'https://CURRENT-DOMAIN/callback'
     scopes: ['*'],
     locale: 'en',
+    // state: '', //optional
     stateStore: new SSOfy.LocalStorage(),
     stateTtl: 30 * 24 * 60 * 60,
 });
@@ -63,6 +64,7 @@ const config = new OAuth2Config({
     pkceVerification: true,
     scopes: ['*'],
     locale: 'en',
+    // state: '', //optional
     stateStore: <Storage>stateStore,
     stateTtl: 30 * 24 * 60 * 60,
 });
@@ -70,16 +72,25 @@ const config = new OAuth2Config({
 const client = new OAuth2Client(config);
 ```
 
-### Authorization
+### Generate Login Url
 
+#### Auth Code Flow
 ```javascript
 const customAuthorizationUrl = null; // optional
 const nextUri = null; // optional
 
-// Implicit Flow
-const stateData = await client.initImplicitFlow(customAuthorizationUrl, nextUri);
-// Auth Code Flow
 const stateData = await client.initAuthCodeFlow(customAuthorizationUrl, nextUri);
+
+// redirect to the login page
+window.location.href = stateData.authorizationUri;
+```
+
+#### Implicit Flow
+```javascript
+const customAuthorizationUrl = null; // optional
+const nextUri = null; // optional
+
+const stateData = await client.initImplicitFlow(customAuthorizationUrl, nextUri);
 
 // redirect to the login page
 window.location.href = stateData.authorizationUri;
@@ -90,6 +101,7 @@ window.location.href = stateData.authorizationUri;
 // create json payload from url parameters
 const parameters = SSOfy.UrlHelper.getParameters(window.location.href);
 
+// handle the callback
 const stateData = await client.handleCallback(parameters);
 
 // store the last login state identifier somewhere for future use
@@ -109,6 +121,9 @@ const accessToken = await client.getAccessToken(state);
 ```
 
 ### Renew Access Token
+In most cases, it's not necessary to call this method as `getAccessToken()` refreshes the token automatically upon expiration.
+However, should you require an earlier token refresh, this method can be used in such instances.
+
 ```javascript
 const state = localStorage.getItem('state');
 
@@ -128,8 +143,8 @@ await client.destroy(state);
 
 // logout from this device
 window.location.href = config.logoutUrl('URI-TO-REDIRECT-AFTER-LOGOUT')
-    
-// logout from all devices
+
+// logout from all devices (SLO)
 window.location.href = config.logoutEverywhereUrl('URI-TO-REDIRECT-AFTER-LOGOUT')
 ```
 

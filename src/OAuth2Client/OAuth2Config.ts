@@ -10,6 +10,7 @@ export class OAuth2Config implements OAuth2ConfigParameters {
     timeout?: number;
     scopes?: string[];
     locale?: string;
+    state?: string;
     stateStore?: Storage;
     stateTtl?: number;
 

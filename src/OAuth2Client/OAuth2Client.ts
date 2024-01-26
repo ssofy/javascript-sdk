@@ -287,6 +287,7 @@ export class OAuth2Client {
                 client_id: this.config.clientId ?? '',
                 redirect_uri: this.config.redirectUri ?? '',
                 scope: this.config.scopes?.join(' ') ?? '',
+                state: this.config.state,
                 response_type: responseType,
                 extras: extras,
             }, new PKCECrypto(), this.config.pkceVerification);
