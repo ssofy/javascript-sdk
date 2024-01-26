@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 1.1.0 * 2024-01-27
+
+* Handled the callback errors.
+* Added support for custom states.
+
 ## 1.0.3 * 2023-08-07
 
 * Hotfix: Fixed module load issue.
