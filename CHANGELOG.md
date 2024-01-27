@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.2.0 * 2024-01-27
+
+* Fixed issue with parsing query parameters in fragment.
+* Added SessionStorage for browser.
+* Fixed issue with confidential client authentication using clientSecret config.
+
 ## 1.1.0 * 2024-01-27
 
 * Handled the callback errors.
