@@ -148,6 +148,14 @@ window.location.href = config.logoutUrl('URI-TO-REDIRECT-AFTER-LOGOUT')
 window.location.href = config.logoutEverywhereUrl('URI-TO-REDIRECT-AFTER-LOGOUT')
 ```
 
+### Get User Info
+
+```javascript
+const state = localStorage.getItem('state');
+
+const user = await client.getUserInfo(state);
+```
+
 ## Support
 
 Feel free to reach support with any questions regarding the integration or reporting issues.
