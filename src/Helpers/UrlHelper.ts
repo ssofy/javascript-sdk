@@ -16,13 +16,18 @@ export class UrlHelper {
 
         if (currentUrl.hash) {
             let fragment = currentUrl.hash.substring(1);
-            let secondHashIndex = fragment.indexOf('#');
+
+            const secondHashIndex = fragment.indexOf('#');
             if (secondHashIndex !== -1) {
                 fragment = fragment.substring(0, secondHashIndex);
             }
 
-            let hashParams = new URLSearchParams(fragment);
+            const firstQuestionMarkIndex = fragment.indexOf('?');
+            if (firstQuestionMarkIndex !== -1) {
+                fragment = fragment.substring(firstQuestionMarkIndex);
+            }
 
+            const hashParams = new URLSearchParams(fragment);
             hashParams.forEach((value, key) => {
                 paramsJson[key] = value;
             });
