@@ -79,6 +79,10 @@ export class OAuth2Client {
 
         switch (stateData.responseType) {
             case AuthorizationRequest.RESPONSE_TYPE_CODE:
+                if (config.clientSecret) {
+                    extras['client_secret'] = config.clientSecret;
+                }
+
                 if (config.pkceVerification && stateData.codeVerifier) {
                     extras['code_verifier'] = stateData.codeVerifier;
                 }
@@ -227,9 +231,11 @@ export class OAuth2Client {
 
         const config = new OAuth2Config(stateData.config);
 
-        let extras: StringMap = {
-            'client_secret': config.clientSecret ?? '',
-        };
+        let extras: StringMap = {};
+
+        if (config.clientSecret) {
+            extras['client_secret'] = config.clientSecret;
+        }
 
         if (config.pkceVerification && stateData.codeVerifier) {
             extras['code_verifier'] = stateData.codeVerifier;
