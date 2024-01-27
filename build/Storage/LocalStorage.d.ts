@@ -1,5 +1,6 @@
 import { Storage } from "./Storage";
 export declare class LocalStorage implements Storage {
+    protected storage: globalThis.Storage;
     private readonly prefix;
     private readonly ttlSuffix;
     constructor(prefix?: string);

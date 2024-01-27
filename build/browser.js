@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UrlHelper = exports.CookieStorage = exports.LocalStorage = exports.MemoryStorage = exports.NullStorage = exports.OAuth2Client = exports.OAuth2Config = void 0;
+exports.UrlHelper = exports.CookieStorage = exports.SessionStorage = exports.LocalStorage = exports.MemoryStorage = exports.NullStorage = exports.OAuth2Client = exports.OAuth2Config = void 0;
 var OAuth2Config_1 = require("./OAuth2Config");
 Object.defineProperty(exports, "OAuth2Config", { enumerable: true, get: function () { return OAuth2Config_1.OAuth2Config; } });
 var OAuth2Client_1 = require("./OAuth2Client");
@@ -11,6 +11,8 @@ var MemoryStorage_1 = require("./Storage/MemoryStorage");
 Object.defineProperty(exports, "MemoryStorage", { enumerable: true, get: function () { return MemoryStorage_1.MemoryStorage; } });
 var LocalStorage_1 = require("./Storage/LocalStorage");
 Object.defineProperty(exports, "LocalStorage", { enumerable: true, get: function () { return LocalStorage_1.LocalStorage; } });
+var SessionStorage_1 = require("./Storage/SessionStorage");
+Object.defineProperty(exports, "SessionStorage", { enumerable: true, get: function () { return SessionStorage_1.SessionStorage; } });
 var CookieStorage_1 = require("./Storage/CookieStorage");
 Object.defineProperty(exports, "CookieStorage", { enumerable: true, get: function () { return CookieStorage_1.CookieStorage; } });
 var UrlHelper_1 = require("./Helpers/UrlHelper");

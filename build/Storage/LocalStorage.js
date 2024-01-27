@@ -40,6 +40,7 @@ exports.LocalStorage = void 0;
 var LocalStorage = /** @class */ (function () {
     function LocalStorage(prefix) {
         if (prefix === void 0) { prefix = 'ssofy'; }
+        this.storage = localStorage;
         this.prefix = "".concat(prefix, "_");
         this.ttlSuffix = '_ttl';
     }
@@ -47,10 +48,10 @@ var LocalStorage = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var expirationDate;
             return __generator(this, function (_a) {
-                localStorage.setItem(this.prefixedKey(key), value);
+                this.storage.setItem(this.prefixedKey(key), value);
                 if (ttl !== undefined) {
                     expirationDate = Date.now() + ttl * 1000;
-                    localStorage.setItem(this.ttlKey(key), String(expirationDate));
+                    this.storage.setItem(this.ttlKey(key), String(expirationDate));
                 }
                 return [2 /*return*/];
             });
@@ -62,13 +63,13 @@ var LocalStorage = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        expirationDate = localStorage.getItem(this.ttlKey(key));
+                        expirationDate = this.storage.getItem(this.ttlKey(key));
                         if (!(expirationDate !== null && Date.now() > Number(expirationDate))) return [3 /*break*/, 2];
                         return [4 /*yield*/, this.delete(key)];
                     case 1:
                         _a.sent();
                         return [2 /*return*/, null];
-                    case 2: return [2 /*return*/, localStorage.getItem(this.prefixedKey(key))];
+                    case 2: return [2 /*return*/, this.storage.getItem(this.prefixedKey(key))];
                 }
             });
         });
@@ -76,8 +77,8 @@ var LocalStorage = /** @class */ (function () {
     LocalStorage.prototype.delete = function (key) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                localStorage.removeItem(this.prefixedKey(key));
-                localStorage.removeItem(this.ttlKey(key));
+                this.storage.removeItem(this.prefixedKey(key));
+                this.storage.removeItem(this.ttlKey(key));
                 return [2 /*return*/];
             });
         });
@@ -86,10 +87,10 @@ var LocalStorage = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var i, key;
             return __generator(this, function (_a) {
-                for (i = 0; i < localStorage.length; i++) {
-                    key = localStorage.key(i);
+                for (i = 0; i < this.storage.length; i++) {
+                    key = this.storage.key(i);
                     if (key !== null && key.startsWith(this.prefix)) {
-                        localStorage.removeItem(key);
+                        this.storage.removeItem(key);
                     }
                 }
                 return [2 /*return*/];
@@ -105,8 +106,8 @@ var LocalStorage = /** @class */ (function () {
                         i = 0;
                         _a.label = 1;
                     case 1:
-                        if (!(i < localStorage.length)) return [3 /*break*/, 4];
-                        key = localStorage.key(i);
+                        if (!(i < this.storage.length)) return [3 /*break*/, 4];
+                        key = this.storage.key(i);
                         if (!(key !== null && key.startsWith(this.prefix))) return [3 /*break*/, 3];
                         return [4 /*yield*/, this.get(key.replace(this.prefix, '').replace(this.ttlSuffix, ''))];
                     case 2:

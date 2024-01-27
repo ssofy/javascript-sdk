@@ -110,6 +110,9 @@ var OAuth2Client = /** @class */ (function () {
                         }
                         return [3 /*break*/, 8];
                     case 2:
+                        if (config.clientSecret) {
+                            extras['client_secret'] = config.clientSecret;
+                        }
                         if (config.pkceVerification && stateData.codeVerifier) {
                             extras['code_verifier'] = stateData.codeVerifier;
                         }
@@ -256,14 +259,14 @@ var OAuth2Client = /** @class */ (function () {
         });
     };
     OAuth2Client.prototype.renewAccessToken = function (state) {
-        var _a, _b, _c;
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function () {
             var stateData, token, config, extras, request, tokenHandler, response, e_2;
-            return __generator(this, function (_d) {
-                switch (_d.label) {
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0: return [4 /*yield*/, this.getState(state)];
                     case 1:
-                        stateData = _d.sent();
+                        stateData = _c.sent();
                         if (!stateData) {
                             throw new InvalidStateError_1.InvalidStateError();
                         }
@@ -275,32 +278,33 @@ var OAuth2Client = /** @class */ (function () {
                             throw new RefreshTokenError_1.RefreshTokenError();
                         }
                         config = new OAuth2Config_1.OAuth2Config(stateData.config);
-                        extras = {
-                            'client_secret': (_a = config.clientSecret) !== null && _a !== void 0 ? _a : '',
-                        };
+                        extras = {};
+                        if (config.clientSecret) {
+                            extras['client_secret'] = config.clientSecret;
+                        }
                         if (config.pkceVerification && stateData.codeVerifier) {
                             extras['code_verifier'] = stateData.codeVerifier;
                         }
                         request = new appauth_1.TokenRequest({
-                            client_id: (_b = config.clientId) !== null && _b !== void 0 ? _b : '',
-                            redirect_uri: (_c = config.redirectUri) !== null && _c !== void 0 ? _c : '',
+                            client_id: (_a = config.clientId) !== null && _a !== void 0 ? _a : '',
+                            redirect_uri: (_b = config.redirectUri) !== null && _b !== void 0 ? _b : '',
                             grant_type: appauth_1.GRANT_TYPE_REFRESH_TOKEN,
                             refresh_token: token.refresh_token,
                             extras: extras,
                         });
                         tokenHandler = new appauth_1.BaseTokenRequestHandler(new HttpRequester());
                         response = null;
-                        _d.label = 2;
+                        _c.label = 2;
                     case 2:
-                        _d.trys.push([2, 4, , 5]);
+                        _c.trys.push([2, 4, , 5]);
                         return [4 /*yield*/, tokenHandler.performTokenRequest({
                                 tokenEndpoint: this.config.tokenUrl(),
                             }, request)];
                     case 3:
-                        response = _d.sent();
+                        response = _c.sent();
                         return [3 /*break*/, 5];
                     case 4:
-                        e_2 = _d.sent();
+                        e_2 = _c.sent();
                         if (e_2 instanceof appauth_1.AppAuthError) {
                             throw new AuthError_1.AuthError(e_2.message);
                         }
@@ -309,7 +313,7 @@ var OAuth2Client = /** @class */ (function () {
                         stateData.token = response.toJson();
                         return [4 /*yield*/, this.saveState(state, stateData, this.config.stateTtl)];
                     case 6:
-                        _d.sent();
+                        _c.sent();
                         return [2 /*return*/, stateData.token];
                 }
             });

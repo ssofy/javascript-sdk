@@ -21,6 +21,10 @@ var UrlHelper = /** @class */ (function () {
             if (secondHashIndex !== -1) {
                 fragment = fragment.substring(0, secondHashIndex);
             }
+            var firstQuestionMarkIndex = fragment.indexOf('?');
+            if (firstQuestionMarkIndex !== -1) {
+                fragment = fragment.substring(firstQuestionMarkIndex);
+            }
             var hashParams = new URLSearchParams(fragment);
             hashParams.forEach(function (value, key) {
                 paramsJson[key] = value;
