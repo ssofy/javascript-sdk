@@ -1,6 +1,8 @@
 import {Storage} from "./Storage";
 
 export class LocalStorage implements Storage {
+    protected storage = localStorage;
+
     private readonly prefix: string;
     private readonly ttlSuffix: string;
 
@@ -10,39 +12,39 @@ export class LocalStorage implements Storage {
     }
 
     async put(key: string, value: string, ttl?: number): Promise<void> {
-        localStorage.setItem(this.prefixedKey(key), value);
+        this.storage.setItem(this.prefixedKey(key), value);
         if (ttl !== undefined) {
             const expirationDate = Date.now() + ttl * 1000;
-            localStorage.setItem(this.ttlKey(key), String(expirationDate));
+            this.storage.setItem(this.ttlKey(key), String(expirationDate));
         }
     }
 
     async get(key: string): Promise<string | null> {
-        const expirationDate = localStorage.getItem(this.ttlKey(key));
+        const expirationDate = this.storage.getItem(this.ttlKey(key));
         if (expirationDate !== null && Date.now() > Number(expirationDate)) {
             await this.delete(key);
             return null;
         }
-        return localStorage.getItem(this.prefixedKey(key));
+        return this.storage.getItem(this.prefixedKey(key));
     }
 
     async delete(key: string): Promise<void> {
-        localStorage.removeItem(this.prefixedKey(key));
-        localStorage.removeItem(this.ttlKey(key));
+        this.storage.removeItem(this.prefixedKey(key));
+        this.storage.removeItem(this.ttlKey(key));
     }
 
     async flushAll(): Promise<void> {
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
+        for (let i = 0; i < this.storage.length; i++) {
+            const key = this.storage.key(i);
             if (key !== null && key.startsWith(this.prefix)) {
-                localStorage.removeItem(key);
+                this.storage.removeItem(key);
             }
         }
     }
 
     async cleanup(): Promise<void> {
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
+        for (let i = 0; i < this.storage.length; i++) {
+            const key = this.storage.key(i);
             if (key !== null && key.startsWith(this.prefix)) {
                 await this.get(key.replace(this.prefix, '').replace(this.ttlSuffix, ''));
             }
